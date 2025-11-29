@@ -82,3 +82,10 @@ Authenticated users perform CRUD operations on Products table.
 System updates product records and timestamps automatically.
 
 Public products are available for viewing depending on the display_publicly flag.
+
+## Commands to run project
+```bash
+npm intall
+npm install dependencies
+npm run start
+```
