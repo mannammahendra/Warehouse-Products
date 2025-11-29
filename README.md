@@ -84,8 +84,14 @@ System updates product records and timestamps automatically.
 Public products are available for viewing depending on the display_publicly flag.
 
 ## Commands to run project
+From the root project directory navigate to backend
 ```bash
-npm intall
+cd backend
+```
+
+Run the project using the following commands:
+```bash
+npm install
 npm install dependencies
 npm run start
 ```
