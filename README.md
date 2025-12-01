@@ -95,3 +95,8 @@ npm install
 npm install dependencies
 npm run start
 ```
+
+## Security details of the project
+The application is using hashing before storing the passwords. As hashing is one-way funtion, even some attackers breached the database and get the credentials, they will be unable to login using them.
+
+Also, the application uses **JWT** to provide security over unautharized users. This makes the application does not repond with apis with usernames anymore. It builds standard session  keys with expiration time to avoid unautharized access.
