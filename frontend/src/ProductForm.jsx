@@ -16,6 +16,8 @@ const ProductForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
+  token=localStorage.getItem('token')
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -50,6 +52,7 @@ const ProductForm = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization' : 'Bearer '+token
         },
         body: JSON.stringify(productData),
       });

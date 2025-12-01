@@ -47,12 +47,33 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+// ================== JWT AUTH MIDDLEWARE ==================
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token)
+    return res.status(401).json({ message: "Access denied. No token provided." });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // contains { username: "exampleUser" }
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ message: "Invalid or expired token" });
+  }
+};
+
 // --- API Routes ---
 
 // NEW: Route to get the last 5 recently added products for a specific user
-app.get('/api/products/recent/:username', async (req, res) => {
+app.get('/api/products/recent/:username', authMiddleware,async (req, res) => {
   try {
     const { username } = req.params;
+
+    //prevent unauthorized access
+    if(req.user.username!==username)
+      return res.status(403).json({message:"Unauthorized user. "});
     
     const recentProducts = await Product.find({ username: username })
       .sort({ timestamp: -1 })
@@ -66,9 +87,12 @@ app.get('/api/products/recent/:username', async (req, res) => {
 });
 
 // Route to get all products for a specific user (new endpoint)
-app.get('/api/products/all/:username', async (req, res) => {
+app.get('/api/products/all/:username', authMiddleware, async (req, res) => {
   try {
     const { username } = req.params;
+    //prevent unauthorized access
+    if(req.user.username!==username)
+      return res.status(403).json({message:"Unauthorized user. "});
     const allProducts = await Product.find({ username: username });
     res.status(200).json(allProducts);
   } catch (error) {
@@ -78,9 +102,13 @@ app.get('/api/products/all/:username', async (req, res) => {
 });
 
 // Route to handle product form submission
-app.post('/api/add-product', async (req, res) => {
+app.post('/api/add-product',authMiddleware, async (req, res) => {
   try {
     const { username, productName, quantity, itemType, isPublic } = req.body;
+
+    //prevent unauthorized access
+    if(req.user.username!==username)
+      return res.status(403).json({message:"Unauthorized user. "});
 
     // Create a new product document using the Mongoose model
     const newProduct = new Product({
@@ -103,9 +131,13 @@ app.post('/api/add-product', async (req, res) => {
 });
 
 // Define the API endpoint for updating a product
-app.put('/api/update-product', async (req, res) => {
+app.put('/api/update-product',authMiddleware, async (req, res) => {
     try {
         const { username, productName, quantity, itemType } = req.body;
+
+        //prevent unauthorized access
+        if(req.user.username!==username)
+          return res.status(403).json({message:"Unauthorized user. "});
 
         // Basic validation of input data
         if (!username || !productName || !quantity || !itemType) {
@@ -196,8 +228,15 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password.' });
     }
 
+    //Generate JWT
+    const token=jwt.sign(
+      {username:user.username},
+      process.env.JWT_SECRET,
+      {expiresIN:process.env.JWT_EXPIRES_IN|| '1h'}
+    )
+
     // 3. If passwords match, login is successful
-    res.status(200).json({ message: 'Login successful!' });
+    res.status(200).json({ message: 'Login successful!',token});
 
   } catch (err) {
     console.error(err);

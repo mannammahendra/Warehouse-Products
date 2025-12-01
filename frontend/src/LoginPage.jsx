@@ -29,7 +29,13 @@ function LoginPage() {
         },
         body: JSON.stringify({ username, password }),
       });
+      const data=await response.json();
       if (response.ok) {
+
+        //save the token in localstorage
+        localStorage.setItem('token',data.token);
+        localStorage.setItem('username',username);
+        
         setIsLoggedIn(true);
         console.log('Login successful!');
       } else {

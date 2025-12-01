@@ -15,6 +15,8 @@ const UpdateForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState(null);
 
+    token=localStorage.getItem('token')
+
     // Hardcoded item types as requested
     const itemTypes = ['Electronics', 'Books', 'Apparel', 'Home Goods', 'Others'];
 
@@ -51,6 +53,7 @@ const UpdateForm = () => {
                 method: 'PUT', // Use PUT for updates
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization' : 'Bearer '+token
                 },
                 body: JSON.stringify(updateData),
             });

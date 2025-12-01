@@ -7,6 +7,8 @@ const ProductList = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { username } = location.state || {}; // Get username from navigation state
+
+  const token=localStorage.getItem('token')
   
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,12 +30,22 @@ const ProductList = () => {
         setIsLoading(false);
         return;
     }
+
+    if(!token){
+      setError("Token missing. Please login iin again.");
+      setIsLoading(false);
+      return;
+    }
     
     // Function to fetch recent products based on username
     const fetchRecentProducts = async () => {
       try {
         const url = `${API_BASE_URL}/api/products/recent/${username}`;
-        const response = await fetch(url);
+        const response = await fetch(url,{
+          headers: {
+            "Authorization" : 'Bearer '+token
+          }
+        });
         
         if (!response.ok) {
           throw new Error('Failed to fetch products');
@@ -58,7 +70,7 @@ const ProductList = () => {
       // Cleanup function to clear the interval
       return () => clearInterval(intervalId);
     }
-  }, [username, isShowingAll]); 
+  }, [username, isShowingAll, token]); 
 
   // Function to fetch and display ALL products from the backend
   const handleShowAll = async () => {
@@ -66,7 +78,11 @@ const ProductList = () => {
     setError(null);
     try {
       const url = `${API_BASE_URL}/api/products/all/${username}`;
-      const response = await fetch(url);
+      const response = await fetch(url,{
+        headers: {
+          "Authorization" : 'Bearer '+token
+        }
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch all products');
