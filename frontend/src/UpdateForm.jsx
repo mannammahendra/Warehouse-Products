@@ -15,7 +15,7 @@ const UpdateForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState(null);
 
-    token=localStorage.getItem('token')
+    const token=localStorage.getItem('token')
 
     // Hardcoded item types as requested
     const itemTypes = ['Electronics', 'Books', 'Apparel', 'Home Goods', 'Others'];

@@ -16,7 +16,7 @@ const ProductForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  token=localStorage.getItem('token')
+  const token=localStorage.getItem('token')
 
   const handleSubmit = async (e) => {
     e.preventDefault();
